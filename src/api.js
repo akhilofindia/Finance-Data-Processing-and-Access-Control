@@ -1,4 +1,24 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// Dev: same-origin /api (Vite proxy → Express). Override with VITE_API_URL. Prod build: default to backend URL.
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? '/api' : 'http://localhost:5000/api');
+
+function parseApiError(text, response) {
+  const trimmed = text.trim();
+  if (trimmed.startsWith('<!') || trimmed.startsWith('<html')) {
+    if (trimmed.includes('Cannot POST') || trimmed.includes('Cannot GET')) {
+      return 'API route not found. Start the backend (cd backend && node index.js) and restart Vite after changing vite.config.js.';
+    }
+    return `Unexpected HTML from server (${response.status}). Check that the API is running on port 5000.`;
+  }
+  try {
+    const j = JSON.parse(text);
+    if (j.message) return j.message;
+  } catch {
+    /* ignore */
+  }
+  return trimmed.slice(0, 160) || `Request failed (${response.status})`;
+}
 
 const api = async (endpoint, options = {}) => {
   const token = localStorage.getItem('finance_token');
@@ -8,7 +28,8 @@ const api = async (endpoint, options = {}) => {
     ...options.headers,
   };
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
+  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const response = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers,
   });
@@ -19,11 +40,14 @@ const api = async (endpoint, options = {}) => {
     try {
       data = JSON.parse(text);
     } catch {
-      throw new Error(response.ok ? 'Invalid response from server' : text.slice(0, 200) || 'Request failed');
+      if (!response.ok) {
+        throw new Error(parseApiError(text, response));
+      }
+      throw new Error('Invalid JSON from server');
     }
   }
   if (!response.ok) {
-    throw new Error(data.message || `Request failed (${response.status})`);
+    throw new Error(data.message || parseApiError(text, response));
   }
   return data;
 };

@@ -32,11 +32,13 @@ const SignUpPage = () => {
     }
     setSubmitting(true);
     try {
+      const trimmedEmail = email.trim().toLowerCase();
+      const trimmedName = name.trim();
       await api('/auth/signup', {
         method: 'POST',
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ name: trimmedName, email: trimmedEmail, password, role }),
       });
-      await login(email, password);
+      await login(trimmedEmail, password);
       navigate('/', { replace: true });
     } catch (err) {
       setError(err.message || 'Could not create account');

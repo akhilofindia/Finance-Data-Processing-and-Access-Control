@@ -8,6 +8,11 @@ const recordRoutes = require('./routes/recordRoutes');
 
 const app = express();
 
+app.use((req, res, next) => {
+  console.log(`[REQUEST] ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 // Middleware — allow SPA on another origin/port to read API responses (e.g. Vite on :5173 → API :5000)
 app.use(
   helmet({

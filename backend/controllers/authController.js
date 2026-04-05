@@ -40,7 +40,14 @@ exports.signup = async (req, res) => {
     if (err.code === 11000) {
       return res.status(400).json({ message: 'An account with this email already exists' });
     }
-    res.status(500).json({ message: 'Server error' });
+    if (err.name === 'ValidationError') {
+      const msg = Object.values(err.errors || {})
+        .map((e) => e.message)
+        .join(' ');
+      return res.status(400).json({ message: msg || 'Invalid account details' });
+    }
+    console.error('signup error:', err);
+    res.status(500).json({ message: err.message || 'Server error' });
   }
 };
 
@@ -69,7 +76,12 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email?.toLowerCase?.() || email }).select('+password');
+    const normalizedEmail =
+      typeof email === 'string' ? email.trim().toLowerCase() : String(email ?? '').trim().toLowerCase();
+    if (!normalizedEmail) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+    const user = await User.findOne({ email: normalizedEmail }).select('+password');
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
     if (!user.active) return res.status(403).json({ message: 'Account is inactive' });
 
