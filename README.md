@@ -72,12 +72,7 @@ cd Finance-Data-Processing-and-Access-Control
    ```bash
    npm install
    ```
-3. Create a `.env` file in the `backend` folder and add your credentials (refer to `.env.example`):
-   ```env
-   PORT=5000
-   JWT_SECRET=your_super_secret_key
-   MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/finidash
-   ```
+3. Create a `.env` file in the `backend` folder and add your credentials by following the structure in the provided `.env.example` file.
 
 ### 3. Frontend Configuration
 1. Return to the root directory:
