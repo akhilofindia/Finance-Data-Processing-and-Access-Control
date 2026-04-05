@@ -1,7 +1,7 @@
 // Dev: same-origin /api (Vite proxy → Express). Override with VITE_API_URL. Prod build: default to backend URL.
 const API_BASE =
   import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? '/api' : 'http://localhost:5000/api');
+  'https://finance-data-processing-and-access-47fd.onrender.com/api';
 
 function parseApiError(text, response) {
   const trimmed = text.trim();
