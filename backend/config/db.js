@@ -27,12 +27,29 @@ async function seedDemos() {
   if (!admin) return;
 
   const count = await Record.countDocuments();
-  if (count > 0) return;
+  // Only seed if the database is mostly empty (e.g. less than 10 records)
+  if (count > 10) return;
 
   const samples = [
-    { amount: 5000, type: 'income', category: 'Salary', date: '2026-04-01', notes: 'Monthly Salary', userId: admin._id },
-    { amount: 1200, type: 'expense', category: 'Rent', date: '2026-04-02', notes: 'April Rent', userId: admin._id },
-    { amount: 150, type: 'expense', category: 'Food', date: '2026-04-03', notes: 'Groceries', userId: admin._id },
+    // Income
+    { amount: 14500, type: 'income', category: 'Software Consulting', date: '2026-04-01', notes: 'Phase 1 - Client Project A', userId: admin._id },
+    { amount: 5800, type: 'income', category: 'SaaS Subscriptions', date: '2026-04-05', notes: 'Monthly recurring revenue', userId: admin._id },
+    { amount: 12000, type: 'income', category: 'Project Completion Bonus', date: '2026-04-10', notes: 'Successful deployment bonus', userId: admin._id },
+    { amount: 2400, type: 'income', category: 'Digital Marketplace Sales', date: '2026-03-28', notes: 'Marketplace product sales', userId: admin._id },
+    
+    // Expenses - Office & Infrastructure
+    { amount: 3200, type: 'expense', category: 'Office Rent', date: '2026-04-01', notes: 'City Center Hub Rent', userId: admin._id },
+    { amount: 480, type: 'expense', category: 'AWS Cloud Hosting', date: '2026-04-02', notes: 'Infrastructure scaling cost', userId: admin._id },
+    { amount: 120, type: 'expense', category: 'Workspace Utilities', date: '2026-04-03', notes: 'Internet and Electricity', userId: admin._id },
+    { amount: 2500, type: 'expense', category: 'Hardware Upgrade', date: '2026-03-25', notes: 'New developer laptops (MacBook Pro)', userId: admin._id },
+    
+    // Expenses - Operations
+    { amount: 8500, type: 'expense', category: 'Employee Payroll', date: '2026-03-31', notes: 'March Salary Disbursements', userId: admin._id },
+    { amount: 1250, type: 'expense', category: 'Marketing Campaign', date: '2026-04-08', notes: 'LinkedIn Ads for New Product', userId: admin._id },
+    { amount: 310, type: 'expense', category: 'SaaS Tools', date: '2026-04-07', notes: 'Adobe, Figma, and Slack subscriptions', userId: admin._id },
+    { amount: 180, type: 'expense', category: 'Office Supplies', date: '2026-04-06', notes: 'Stationery and generic inventory', userId: admin._id },
+    { amount: 750, type: 'expense', category: 'Legal & Accounting', date: '2026-04-04', notes: 'Q1 audit and bookkeeping', userId: admin._id },
+    { amount: 95, type: 'expense', category: 'Team Coffee/Snacks', date: '2026-04-09', notes: 'Common area pantry restock', userId: admin._id },
   ];
   await Record.insertMany(samples);
   console.log('Sample records seeded');
