@@ -40,6 +40,6 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.error(err.message || err);
+    console.error('[startup failed]', err.message || err);
     process.exit(1);
   });

@@ -41,10 +41,20 @@ async function seedDemos() {
 async function connectDB() {
   const uri = process.env.MONGODB_URI;
   if (!uri || !uri.trim()) {
-    throw new Error('Set MONGODB_URI in backend/.env (MongoDB Atlas connection string).');
+    throw new Error(
+      'MONGODB_URI is missing. Add it in your host environment (Render: Dashboard → Environment → Environment Variables). Do not rely on a .env file in the repo.'
+    );
   }
   mongoose.set('strictQuery', true);
-  await mongoose.connect(uri);
+  try {
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 15_000,
+    });
+  } catch (e) {
+    const hint =
+      'Check: (1) Atlas → Network Access allows 0.0.0.0/0 or Render outbound IPs, (2) user/password in URI are correct and special chars URL-encoded, (3) cluster host matches Atlas.';
+    throw new Error(`${e.message || e}. ${hint}`);
+  }
   console.log('MongoDB connected (users + financial records live in this database)');
   await seedDemos();
 }
